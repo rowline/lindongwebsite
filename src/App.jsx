@@ -203,46 +203,76 @@ const Hero = () => (
   </section>
 );
 
-const ProductCard = ({ title, subtitle, features, specs, icon: Icon, type }) => (
-  <motion.div 
-    variants={fadeUp}
-    className="bg-white rounded-[2rem] p-8 lg:p-10 hover:shadow-2xl hover:shadow-blue-900/5 transition-all duration-500 group border border-gray-100 relative overflow-hidden"
-  >
-    <div className={`absolute top-0 right-0 w-64 h-64 -mr-16 -mt-16 rounded-full opacity-[0.03] transition-transform duration-700 group-hover:scale-150 ${type === 'care' ? 'bg-teal-600' : 'bg-blue-600'}`}></div>
-    
-    <div className="relative z-10">
-      <div className="flex justify-between items-start mb-8">
-        <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-colors shadow-sm ${type === 'care' ? 'bg-teal-50 text-teal-600' : 'bg-blue-50 text-blue-600'}`}>
-          <Icon size={32} />
-        </div>
-        <div className="px-4 py-1.5 rounded-full border border-gray-200 text-xs font-bold text-gray-500 uppercase tracking-wider">
-          {type === 'care' ? 'Service/Care' : 'Industrial/Inspection'}
-        </div>
-      </div>
-      
-      <h3 className="text-3xl font-black text-gray-900 mb-3">{title}</h3>
-      <p className="text-gray-500 mb-10 leading-relaxed min-h-[3rem]">{subtitle}</p>
-      
-      <div className="space-y-4 mb-10">
-        {features.map((f, i) => (
-          <div key={i} className="flex items-start text-gray-700">
-            <ShieldCheck size={20} className={`mr-3 shrink-0 ${type === 'care' ? 'text-teal-500' : 'text-blue-500'}`} />
-            <span className="text-sm font-medium">{f}</span>
-          </div>
-        ))}
-      </div>
+const ProductCard = ({ title, subtitle, features, specs, icon: Icon, type, images }) => {
+  const [activeImg, setActiveImg] = useState(0);
 
-      <div className="grid grid-cols-2 gap-x-4 gap-y-6 pt-8 border-t border-gray-100">
-        {Object.entries(specs).map(([label, val]) => (
-          <div key={label}>
-            <p className="text-[10px] text-gray-400 uppercase font-black tracking-widest mb-2">{label}</p>
-            <p className="text-lg font-bold text-gray-900">{val}</p>
+  return (
+    <motion.div 
+      variants={fadeUp}
+      className="bg-white rounded-[2rem] p-8 lg:p-10 hover:shadow-2xl hover:shadow-blue-900/5 transition-all duration-500 group border border-gray-100 relative flex flex-col h-full overflow-hidden"
+    >
+      <div className={`absolute top-0 right-0 w-64 h-64 -mr-16 -mt-16 rounded-full opacity-[0.03] transition-transform duration-700 group-hover:scale-150 ${type === 'care' ? 'bg-teal-600' : 'bg-blue-600'}`}></div>
+      
+      <div className="relative z-10 flex-1 flex flex-col">
+        <div className="flex justify-between items-start mb-8">
+          <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-colors shadow-sm ${type === 'care' ? 'bg-teal-50 text-teal-600' : 'bg-blue-50 text-blue-600'}`}>
+            <Icon size={32} />
           </div>
-        ))}
+          <div className="px-4 py-1.5 rounded-full border border-gray-200 text-xs font-bold text-gray-500 uppercase tracking-wider">
+            {type === 'care' ? 'Service/Care' : 'Industrial/Inspection'}
+          </div>
+        </div>
+        
+        <h3 className="text-3xl font-black text-gray-900 mb-3">{title}</h3>
+        <p className="text-gray-500 mb-8 leading-relaxed min-h-[3rem]">{subtitle}</p>
+
+        {images && images.length > 0 && (
+          <div className="mb-10 group/images">
+            <div className="w-full aspect-[4/3] rounded-2xl overflow-hidden mb-3 border border-gray-100 bg-white flex items-center justify-center relative">
+              <img 
+                src={images[activeImg]} 
+                alt={title} 
+                className={`w-full h-full transition-transform duration-700 group-hover/images:scale-105 ${images[activeImg].endsWith('.png') ? 'object-contain mix-blend-darken p-4' : 'object-cover'}`} 
+              />
+            </div>
+            {images.length > 1 && (
+              <div className="flex gap-2 relative z-20">
+                {images.map((img, idx) => (
+                  <button 
+                    key={idx} 
+                    onMouseEnter={() => setActiveImg(idx)}
+                    onClick={() => setActiveImg(idx)}
+                    className={`flex-1 aspect-video rounded-lg overflow-hidden border-2 transition-all ${activeImg === idx ? (type === 'care' ? 'border-teal-500' : 'border-blue-500') : 'border-transparent opacity-50 hover:opacity-100'}`}
+                  >
+                    <img src={img} alt="" className={`w-full h-full bg-white ${img.endsWith('.png') ? 'object-contain mix-blend-darken p-1' : 'object-cover'}`} />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+        
+        <div className="space-y-4 mb-8 flex-1">
+          {features.map((f, i) => (
+            <div key={i} className="flex items-start text-gray-700">
+              <ShieldCheck size={20} className={`mr-3 shrink-0 ${type === 'care' ? 'text-teal-500' : 'text-blue-500'}`} />
+              <span className="text-sm font-medium">{f}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-2 gap-x-4 gap-y-6 pt-8 border-t border-gray-100 mt-auto">
+          {Object.entries(specs).map(([label, val]) => (
+            <div key={label}>
+              <p className="text-[10px] text-gray-400 uppercase font-black tracking-widest mb-2">{label}</p>
+              <p className="text-lg font-bold text-gray-900">{val}</p>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
-  </motion.div>
-);
+    </motion.div>
+  );
+};
 
 const SectionHeading = ({ title, description, badge }) => (
   <motion.div 
@@ -283,12 +313,17 @@ const Products = () => (
           specs={{ "运行高度": "1.5m", "整机重量": "75kg", "标准续航": "6-8h", "单臂负载": "3kg" }}
         />
         <ProductCard 
-          title="RK100 · 智能探勘者"
-          subtitle="集智能巡检与精细操作于一体的多功能双足人形机器人，胜任高危复杂环境。"
+          title="CR100 · 智能探勘者"
+          subtitle="集智能巡检与精细操作于一体的多功能探勘机器人，胜任高危复杂环境。"
           type="industrial"
           icon={Cpu}
-          features={["抗干扰高性能双足系统", "7自由度仿生灵巧手臂", "复杂全地形自适应移动", "工业级边缘智能决策"]}
-          specs={{ "运行高度": "1.6m", "最大速度": "1.2m/s", "标准续航": "2-3h", "适应环境": "全地形" }}
+          images={[
+            '/images/CR100.png',
+            '/images/CR100_hands.JPG',
+            '/images/CR100_move.JPG'
+          ]}
+          features={["抗干扰高性能移动系统", "多自由度仿生灵巧手臂", "复杂全地形自适应移动", "工业级边缘智能决策"]}
+          specs={{ "运行高度": "1.6m", "最大负载": "50kg+", "标准续航": "2-3h", "适应环境": "全地形" }}
         />
       </motion.div>
     </div>
